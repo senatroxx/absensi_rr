@@ -5,10 +5,6 @@
     $date = date('Y-m-d');;
     if (isset($_POST['absen'])) {
         $absen = mysqli_query($koneksi, "INSERT INTO tbl_absen (id, nip, tanggal) VALUES (NULL, '$nip', '$date')");
-        if ($absen) {
-            $_SESSION['hasil'] = 1;
-            header("location:absen.php");
-        }
     }
     $cek = mysqli_query($koneksi, "SELECT * FROM tbl_absen WHERE nip='$nip' AND tanggal='$date'");
     $cek2 = mysqli_num_rows($cek);
@@ -160,28 +156,39 @@
     }
 
     input:disabled{
-        cursor:not-allowed;
+        cursor:not-allowed!important;
+    }
+
+    input#absen{
+        cursor:pointer;
     }
     </style>
+    <script>
+        let tanggal = new Date(),
+            jam = tanggal.getHours();
+        if (jam > 8) {
+            document.addEventListener("DOMContentLoaded", function(event) {
+                document.getElementById("tombolAbsen").disabled = true;
+            });
+        }
+    </script>
 </head>
 <body>
 <?php 
-    if (isset($_SESSION['hasil'])) {
-        if ($_SESSION['hasil'] == 1) {
+    if ($cek2 > 0) {
             echo "
             <div class='notice'>
                 Terimakasih, anda sudah absen.
             </div>
             ";
         }
-    }
 ?>
 <div class="nav">
     <ul>
         <li><a href="index.php">Profile</a></li>
         <li>
         <form method="post">
-            <input type="submit" value="Klik disini untuk absen." name="absen" <?php if ($cek2 > 0) { echo "disabled"; } ?>>
+            <input type="submit" value="Klik disini untuk absen." id="tombolAbsen" name="absen" <?php if ($cek2 > 0) { echo "disabled"; } ?>>
         </form>
         </li>
         <li style="float:right"><a class="logout" href="config/logout.php">Logout</a></li>
